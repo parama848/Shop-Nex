@@ -14,11 +14,7 @@ select,input,textarea{
     border-radius: 4px;
     
 }
-.logo{
-    width: 150px ;
-    height: 100px;
-    padding: none;
-}
+
 
 .active{
     background-color: rgb(225, 87, 69);

@@ -41,7 +41,6 @@ const statusHandler = async (event, orderId) => {
   }
 }
 
-
   useEffect(() => {
     fetchAllOrders();
   }, [token]);

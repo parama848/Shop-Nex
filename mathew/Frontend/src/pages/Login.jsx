@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useContext } from "react";
-import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import {ShopContext} from '../context/ShopContext'
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login");
@@ -55,7 +55,7 @@ const Login = () => {
     useEffect(()=>{
       if (token) {
          navigate('/');
-      }
+      } 
     },[token])
 
   return (

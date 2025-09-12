@@ -103,9 +103,9 @@ const Cart = () => {
               PROCEED TO CHECKOUT
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+        </div> 
+      </div>  
+    </div> 
   );
 };
 

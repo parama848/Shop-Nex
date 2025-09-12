@@ -78,13 +78,13 @@ const logout = () =>{
         <Link to="/cart" className="relative">
           <img src={assets.cart_icon} className="w-6 min-w-5 mr-5" alt="Cart" />
           <p className="mr-5 absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-red-600 text-white aspect-square rounded-full text-[8px]">
-            {getCartCount()}
+            {getCartCount()} 
           </p>
         </Link>
 
         {/* Mobile Menu Icon */}
         <img
-          onClick={() => setVisible(true)}
+          onClick={() => setVisible(true)} 
           src={assets.menu_icon}
           className="w-5 cursor-pointer sm:hidden"
           alt="Menu"
@@ -99,7 +99,7 @@ const logout = () =>{
         <div className="flex flex-col text-gray-600">
             <div onClick={()=>setVisible(false)} className="flex items-center gap-4 p-3 cursor-pointer">
                 <img className="h-4 rotate-180 " src={assets.dropdown_icon} alt="" />
-                <p>Back</p>
+                <p>Back</p> 
             </div>
             <NavLink onClick={()=>setVisible(false)} className="py-2 pl-6 border" to='/'>Home</NavLink>
             <NavLink onClick={()=>setVisible(false)} className="py-2 pl-6 border" to='/collection'>Collection</NavLink>
