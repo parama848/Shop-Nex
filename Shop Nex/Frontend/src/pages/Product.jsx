@@ -80,7 +80,7 @@ const Product = () => {
                   type="button"
                   onClick={() => setSize(item)}
                   className={`border py-2 px-4 bg-gray-100 ${
-                    item === size ? "bg-red-400 text-white rounded-sm" : ""
+                    item === size ? "bg-blue-500 text-white rounded-sm" : ""
                   }`}
                   key={item}
                 >
@@ -89,7 +89,7 @@ const Product = () => {
               ))}
             </div>
           </div>
-          <button onClick={()=>addToCart(productData._id,size)} className="hover:bg-red-500 hover:border-red-500 hover:text-white text-black border border-black px-8 py-3 text-sm active:bg-gray-700">ADD TO CART</button>
+          <button onClick={()=>addToCart(productData._id,size)} className="hover:bg-blue-500 hover:border-blue-500 hover:text-white text-black border border-blue-400 px-8 py-3 text-sm active:bg-gray-700">ADD TO CART</button>
           <hr className="mt-8 sm:w-4/5" />
           <div className="text-sm text-gray-500 mtt-5 flex flex-col gap-1">
             <p>100% Original product.</p>
