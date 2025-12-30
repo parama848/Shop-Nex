@@ -80,7 +80,7 @@ const Product = () => {
                   type="button"
                   onClick={() => setSize(item)}
                   className={`border py-2 px-4 bg-gray-100 ${
-                    item === size ? "bg-blue-500 text-white rounded-sm" : ""
+                    item === size ? "bg-blue-500 text-blue-500 rounded-sm" : ""
                   }`}
                   key={item}
                 >

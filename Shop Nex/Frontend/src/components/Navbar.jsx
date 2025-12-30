@@ -68,7 +68,7 @@ const Navbar = () => {
               />
 
               {token && (
-                <div className="absolute -right-2 mt-3 hidden group-hover:block">
+                <div className="absolute -right-2 top-2 mt-3 hidden group-hover:block">
                   <div className="w-40 bg-white shadow-lg rounded-lg text-sm border">
                     <p
                       onClick={() => navigate("/orders")}
@@ -95,7 +95,7 @@ const Navbar = () => {
                 alt="cart"
               />
               {getCartCount() > 0 && (
-                <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-2 bg-blue-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
                   {getCartCount()}
                 </span>
               )}

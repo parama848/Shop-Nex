@@ -6,7 +6,7 @@ import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
 
-const Orders = ({ token }) => {
+const Orders = ({ token, setToken }) => {
   const [orders, setOrders] = useState([]);
   const fetchAllOrders = async () => {
     if (!token) {
@@ -22,6 +22,9 @@ const Orders = ({ token }) => {
         setOrders(response.data.orders.reverse());
       } else {
         toast.error(response.data.message);
+        if (response.data.message === "Not Authorized Login Again" || response.data.message === "invalid signature") {
+          setToken("");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -29,17 +32,22 @@ const Orders = ({ token }) => {
     }
   };
 
-const statusHandler = async (event, orderId) => {
-  try {
-    const response = await axios.post(backendUrl + '/api/order/status', { orderId, status: event.target.value }, { headers: { token } });
-    if (response.data.success) {
-      await fetchAllOrders();
+  const statusHandler = async (event, orderId) => {
+    try {
+      const response = await axios.post(backendUrl + '/api/order/status', { orderId, status: event.target.value }, { headers: { token } });
+      if (response.data.success) {
+        await fetchAllOrders();
+      } else {
+        toast.error(response.data.message);
+        if (response.data.message === "Not Authorized Login Again" || response.data.message === "invalid signature") {
+          setToken("");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
     }
-  } catch (error) {
-    console.log(error);
-   toast.error(error.message);
   }
-}
 
   useEffect(() => {
     fetchAllOrders();
@@ -56,7 +64,7 @@ const statusHandler = async (event, orderId) => {
           >
             {/* Image Section */}
             <div className="flex justify-center items-start pt-1">
-              <img 
+              <img
                 src={assets.parcel_icon}
                 alt="Parcel Icon"
                 className="w-12 sm:w-12 md:w-14"
@@ -77,7 +85,7 @@ const statusHandler = async (event, orderId) => {
 
               {/* Address */}
               <p className="font-medium py-0.5 mt-3 mb-2">
-                {order.address.firstName + " " + order.address.lastName}
+                {order.address.name}
               </p>
               <div className="text-xs text-gray-500 leading-tight">
                 <p className="py-0.5">{order.address.street}</p>
@@ -117,7 +125,7 @@ const statusHandler = async (event, orderId) => {
             {/* Status Select */}
             <div>
               <select
-                onChange={(event)=>statusHandler(event,order._id)}
+                onChange={(event) => statusHandler(event, order._id)}
                 value={order.status}
                 className="border border-gray-300 px-2 py-1 rounded text-sm p-2 font-semibold"
               >

@@ -1,4 +1,3 @@
-// src/context/ShopContext.jsx
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -10,25 +9,43 @@ const ShopContextProvider = ({ children }) => {
   const currency = "₹";
   const delivery_fee = 10;
 
-  // Use env var or fallback to localhost
+  /* ================================
+     BACKEND URL
+  ================================= */
   const rawBackendUrl = import.meta.env.VITE_BACKEND_URL;
   const backendUrl = rawBackendUrl ?? "http://localhost:4000";
 
-  // Axios instance with baseURL
+  /* ================================
+     AXIOS INSTANCE
+  ================================= */
   const api = axios.create({
     baseURL: backendUrl,
     headers: { "Content-Type": "application/json" },
-    timeout: 10_000,
+    timeout: 10000,
   });
 
+  // 🔐 Attach JWT automatically
+  api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+
+  /* ================================
+     STATE
+  ================================= */
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
-  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
+  const navigate = useNavigate();
 
-  // safe clone (structuredClone fallback)
+  /* ================================
+     UTIL
+  ================================= */
   const deepClone = (obj) => {
     try {
       return structuredClone(obj);
@@ -37,31 +54,25 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
-  // Add to cart (frontend + backend sync if logged in)
+  /* ================================
+     ADD TO CART
+  ================================= */
   const addToCart = async (itemId, size) => {
     if (!size) {
-      toast.error("Please Select Product Size");
+      toast.error("Please select product size");
       return;
     }
 
     const cartData = deepClone(cartItems);
 
-    if (cartData[itemId]) {
-      cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
-    } else {
-      cartData[itemId] = { [size]: 1 };
-    }
+    if (!cartData[itemId]) cartData[itemId] = {};
+    cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
 
     setCartItems(cartData);
 
-    // persist to backend if logged in
     if (token) {
       try {
-        await api.post(
-          "/api/cart/add",
-          { itemId, size },
-          { headers: { token } }
-        );
+        await api.post("/api/cart/add", { itemId, size });
       } catch (error) {
         console.error("Cart add error:", error?.response ?? error.message);
         toast.error("Failed to sync cart with server");
@@ -69,35 +80,24 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
-  // cart count
-  const getCartCount = () => {
-    let totalCount = 0;
-    for (const productId in cartItems) {
-      const sizesObj = cartItems[productId];
-      for (const size in sizesObj) {
-        const qty = Number(sizesObj[size]) || 0;
-        if (qty > 0) totalCount += qty;
-      }
-    }
-    return totalCount;
-  };
-
-  // update quantity (frontend + backend)
+  /* ================================
+     UPDATE QUANTITY
+  ================================= */
   const updateQuantity = async (itemId, size, quantity) => {
     const cartData = deepClone(cartItems);
 
-    // ensure structure exists
     if (!cartData[itemId]) cartData[itemId] = {};
     cartData[itemId][size] = quantity;
+
     setCartItems(cartData);
 
     if (token) {
       try {
-        await api.post(
-          "/api/cart/update",
-          { itemId, size, quantity },
-          { headers: { token } }
-        );
+        await api.post("/api/cart/update", {
+          itemId,
+          size,
+          quantity,
+        });
       } catch (error) {
         console.error("Cart update error:", error?.response ?? error.message);
         toast.error("Failed to update cart on server");
@@ -105,88 +105,97 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
-  // cart amount
-  const getCartAmount = () => {
-    let totalAmount = 0;
-    for (const productId in cartItems) {
-      const itemInfo = products.find((p) => p._id === productId);
-      for (const size in cartItems[productId]) {
-        const qty = Number(cartItems[productId][size]) || 0;
-        if (qty > 0 && itemInfo?.price) {
-          totalAmount += itemInfo.price * qty;
-        }
+  /* ================================
+     CART COUNT
+  ================================= */
+  const getCartCount = () => {
+    let total = 0;
+    for (const id in cartItems) {
+      for (const size in cartItems[id]) {
+        total += Number(cartItems[id][size]) || 0;
       }
     }
-    return totalAmount;
+    return total;
   };
 
-  // get products from backend and normalize shape
+  /* ================================
+     CART AMOUNT
+  ================================= */
+  const getCartAmount = () => {
+    let total = 0;
+    for (const id in cartItems) {
+      const product = products.find((p) => p._id === id);
+      if (!product) continue;
+
+      for (const size in cartItems[id]) {
+        const qty = Number(cartItems[id][size]) || 0;
+        total += qty * (product.price ?? 0);
+      }
+    }
+    return total;
+  };
+
+  /* ================================
+     LOAD PRODUCTS
+  ================================= */
   const getProductsData = async () => {
     try {
-      const response = await api.get("/api/product/list");
-      const data = response.data ?? {};
-      const productArray = Array.isArray(data.products) ? data.products : [];
+      const res = await api.get("/api/product/list");
+      const list = res.data?.products ?? [];
 
-      // normalize image to array (so frontend can use image[0])
-      const normalized = productArray.map((p) => ({
+      const normalized = list.map((p) => ({
         ...p,
-        image:
-          Array.isArray(p.image) && p.image.length > 0
-            ? p.image
-            : p.image
-            ? [p.image]
-            : ["/fallback.png"],
+        image: Array.isArray(p.image)
+          ? p.image
+          : p.image
+          ? [p.image]
+          : ["/fallback.png"],
       }));
 
       setProducts(normalized);
     } catch (error) {
-      console.error("Failed to load products:", error?.response ?? error.message);
+      console.error("Load products error:", error?.response ?? error.message);
       toast.error("Failed to load products");
-      setProducts([]);
     }
   };
 
-  // get user cart from backend (expects token)
-  const getUserCart = async (tkn) => {
-    if (!tkn) return;
+  /* ================================
+     LOAD USER CART
+  ================================= */
+  const getUserCart = async () => {
     try {
-      const response = await api.post("/api/cart/get", {}, { headers: { token: tkn } });
-      const data = response.data ?? {};
-      setCartItems(data.cartData ?? {});
+      const res = await api.post("/api/cart/get");
+      setCartItems(res.data?.cartData ?? {});
     } catch (error) {
-      console.error("Failed to load user cart:", error?.response ?? error.message);
-      // don't toast aggressively here on page load
+      console.error("Load cart error:", error?.response ?? error.message);
     }
   };
 
-  // initial load of products
+  /* ================================
+     EFFECTS
+  ================================= */
   useEffect(() => {
     getProductsData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backendUrl]); // reload if backendUrl changes
-
-  // sync token from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("token");
-    if (stored) {
-      setToken(stored);
-    }
   }, []);
 
-  // whenever token changes to a truthy value, fetch cart from backend
+  useEffect(() => {
+    const stored = localStorage.getItem("token");
+    if (stored) setToken(stored);
+  }, []);
+
   useEffect(() => {
     if (token) {
-      getUserCart(token);
-      // store token to localStorage so it persists across reloads
       localStorage.setItem("token", token);
+      getUserCart();
     } else {
-      // if token becomes empty (logout), clear localStorage and local cart
       localStorage.removeItem("token");
       setCartItems({});
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
+  /* ================================
+     CONTEXT VALUE
+  ================================= */
   const value = {
     products,
     currency,
@@ -198,8 +207,8 @@ const ShopContextProvider = ({ children }) => {
     cartItems,
     setCartItems,
     addToCart,
-    getCartCount,
     updateQuantity,
+    getCartCount,
     getCartAmount,
     navigate,
     backendUrl,
@@ -207,7 +216,11 @@ const ShopContextProvider = ({ children }) => {
     setToken,
   };
 
-  return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
+  return (
+    <ShopContext.Provider value={value}>
+      {children}
+    </ShopContext.Provider>
+  );
 };
 
 export default ShopContextProvider;
