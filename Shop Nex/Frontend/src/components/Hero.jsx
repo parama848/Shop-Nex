@@ -53,9 +53,9 @@ const Hero = () => {
 
           <div className="flex gap-4 pt-4">
             <Link to="/Collection">
-            <button className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition">
-              Shop Now
-            </button>
+              <button className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition">
+                Shop Now
+              </button>
             </Link>
           </div>
         </div>
@@ -67,9 +67,8 @@ const Hero = () => {
               key={slide.id}
               src={slide.image}
               alt="hero"
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                index === current ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === current ? "opacity-100" : "opacity-0"
+                }`}
             />
           ))}
         </div>
@@ -82,9 +81,8 @@ const Hero = () => {
           <button
             key={index}
             onClick={() => setCurrent(index)}
-            className={`w-3 h-3 rounded-full ${
-              index === current ? "bg-black" : "bg-gray-300"
-            }`}
+            className={`w-3 h-3 rounded-full ${index === current ? "bg-black" : "bg-gray-300"
+              }`}
           />
         ))}
       </div>

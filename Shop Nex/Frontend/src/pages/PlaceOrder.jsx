@@ -176,35 +176,55 @@ const PlaceOrder = () => {
           return;
         }
 
-        const rzp = new window.Razorpay({
+        if (!window.Razorpay) {
+          toast.error("Razorpay SDK failed to load. Check your internet connection.");
+          return;
+        }
+
+        const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: res.data.order.amount,
           currency: "INR",
-          name: "My Shop",
+          name: "Shop Nex",
+          description: "Order Payment",
           order_id: res.data.order.id,
+          receipt: res.data.order.receipt,
           handler: async (response) => {
-            const verify = await axios.post(
-              `${backendUrl}/api/order/verifyRazorpay`,
-              response,
-              { headers }
-            );
+            console.log("Razorpay Response:", response);
+            try {
+              const verify = await axios.post(
+                `${backendUrl}/api/order/verifyRazorpay`,
+                response,
+                { headers }
+              );
 
-            if (verify.data.success) {
-              toast.success("Payment successful");
-              setCartItems({});
-              navigate(`/order-success/${res.data.order.receipt}`);
-            } else {
-              toast.error("Payment verification failed");
+              if (verify.data.success) {
+                toast.success("Payment successful");
+                setCartItems({});
+                navigate(`/order-success/${res.data.order.receipt}`);
+              } else {
+                toast.error("Payment verification failed");
+              }
+            } catch (error) {
+              console.error("Verify API Error:", error);
+              toast.error("Payment verification error");
             }
           },
           prefill: {
-            name: form.firstName,
+            name: `${form.firstName} ${form.lastName}`,
             email: form.email,
             contact: form.phone,
           },
           theme: {
             color: "#000000",
           },
+        };
+
+        const rzp = new window.Razorpay(options);
+
+        rzp.on("payment.failed", function (response) {
+          console.error("Payment Failed:", response.error);
+          toast.error(response.error.description || "Payment failed");
         });
 
         rzp.open();
@@ -236,24 +256,24 @@ const PlaceOrder = () => {
           </h2>
 
           <div className="grid grid-cols-2 gap-4">
-            <input className="input" name="firstName" placeholder="First Name" onChange={handleChange} />
-            <input className="input" name="lastName" placeholder="Last Name" onChange={handleChange} />
+            <input className="input" name="firstName" value={form.firstName} placeholder="First Name" onChange={handleChange} required />
+            <input className="input" name="lastName" value={form.lastName} placeholder="Last Name" onChange={handleChange} required />
           </div>
 
-          <input className="input mt-4" name="email" placeholder="Email" onChange={handleChange} />
-          <input className="input mt-4" name="street" placeholder="Street" onChange={handleChange} />
+          <input className="input mt-4" name="email" value={form.email} placeholder="Email" onChange={handleChange} required />
+          <input className="input mt-4" name="street" value={form.street} placeholder="Street" onChange={handleChange} required />
 
           <div className="grid grid-cols-2 gap-4 mt-4">
-            <input className="input" name="city" placeholder="City" onChange={handleChange} />
-            <input className="input" name="state" placeholder="State" onChange={handleChange} />
+            <input className="input" name="city" value={form.city} placeholder="City" onChange={handleChange} required />
+            <input className="input" name="state" value={form.state} placeholder="State" onChange={handleChange} required />
           </div>
 
           <div className="grid grid-cols-2 gap-4 mt-4">
-            <input className="input" name="zipcode" placeholder="Zipcode" onChange={handleChange} />
-            <input className="input" name="country" placeholder="Country" onChange={handleChange} />
+            <input className="input" name="zipcode" value={form.zipcode} placeholder="Zipcode" onChange={handleChange} required />
+            <input className="input" name="country" value={form.country} placeholder="Country" onChange={handleChange} required />
           </div>
 
-          <input className="input mt-4" name="phone" placeholder="Phone" onChange={handleChange} />
+          <input className="input mt-4" name="phone" value={form.phone} placeholder="Phone" onChange={handleChange} required />
         </div>
 
         {/* SUMMARY */}
@@ -284,8 +304,8 @@ const PlaceOrder = () => {
                 type="button"
                 onClick={() => setPaymentMethod(method)}
                 className={`border rounded-lg py-3 text-sm font-medium transition ${paymentMethod === method
-                    ? "border-black ring-2 ring-black"
-                    : "hover:border-gray-400"
+                  ? "border-black ring-2 ring-black"
+                  : "hover:border-gray-400"
                   }`}
               >
                 {method.toUpperCase()}

@@ -172,20 +172,25 @@ const placeOrderRazorpay = async (req, res) => {
       receipt: order._id.toString(),
     };
 
-    razorpayInstance.orders.create(options, (error, razorpayOrder) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).json({
-          success: false,
-          message: error.message,
-        });
-      }
+    console.log("Using Razorpay Key:", process.env.RAZORPAY_KEY_ID?.slice(0, 4) + "****");
 
+
+    try {
+      const razorpayOrder = await razorpayInstance.orders.create(options);
       res.json({
         success: true,
         order: razorpayOrder,
       });
-    });
+    } catch (error) {
+      console.error("Razorpay Order Create Error:", error);
+      // Razorpay returns errors in a specific structure { error: { description: '...' } }
+      const errorMessage = error.error?.description || error.message || "Razorpay API Error";
+      return res.status(500).json({
+        success: false,
+        message: errorMessage,
+      });
+    }
+
   } catch (error) {
     console.error(error);
     res.status(500).json({
