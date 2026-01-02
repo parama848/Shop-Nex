@@ -21,6 +21,19 @@ connectCloudinary()
 app.use(express.json())
 app.use(cors())
 
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5174",       // admin local
+      "http://localhost:5173",       // frontend local
+      "https://shop-nex-frontend.vercel.app",
+      "https://shop-nex-admin.vercel.app"
+    ],
+    credentials: true,
+  })
+);
+
+
 //  api endpoints
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)

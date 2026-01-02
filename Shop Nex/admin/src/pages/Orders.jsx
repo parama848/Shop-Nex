@@ -62,9 +62,6 @@ const Orders = ({ token, setToken }) => {
   }, [token]);
   
 
-  // useEffect(() => {
-  //   fetchAllOrders();
-  // }, [token]);
 if(loading){
   return (
     <div className="min-h-screen flex items-center justify-center">
