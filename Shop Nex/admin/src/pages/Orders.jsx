@@ -8,6 +8,9 @@ import { assets } from "../assets/assets";
 
 const Orders = ({ token, setToken }) => {
   const [orders, setOrders] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
   const fetchAllOrders = async () => {
     if (!token) {
       return null;
@@ -50,8 +53,29 @@ const Orders = ({ token, setToken }) => {
   }
 
   useEffect(() => {
-    fetchAllOrders();
+    const loadData = async () => {
+      setLoading(true);
+      await fetchAllOrders();
+      setLoading(false);
+    };
+    loadData();
   }, [token]);
+  
+
+  // useEffect(() => {
+  //   fetchAllOrders();
+  // }, [token]);
+if(loading){
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+        <p className="text-sm text-gray-600">Loading, please wait...</p>
+      </div>
+    </div>
+  );
+}
+else {
 
   return (
     <div className="ml-10 ">
@@ -70,7 +94,7 @@ const Orders = ({ token, setToken }) => {
                 className="w-12 sm:w-12 md:w-14"
               />
             </div>
-
+  
             {/* Item & Address Info */}
             <div>
               {/* Ordered Items */}
@@ -82,7 +106,7 @@ const Orders = ({ token, setToken }) => {
                   </p>
                 ))}
               </div>
-
+  
               {/* Address */}
               <p className="font-medium py-0.5 mt-3 mb-2">
                 {order.address.name}
@@ -96,7 +120,7 @@ const Orders = ({ token, setToken }) => {
                 <p className="py-0.5">{order.address.phone}</p>
               </div>
             </div>
-
+  
             {/* Order Summary */}
             <div className="text-xs space-y-1">
               <p className="mb-3">
@@ -115,13 +139,13 @@ const Orders = ({ token, setToken }) => {
                 {new Date(order.date).toLocaleDateString()}
               </p>
             </div>
-
+  
             {/* Amount */}
             <div className=" font-semibold  text-sm sm:text-[15px]">
               {currency}
               {order.amount}
             </div>
-
+  
             {/* Status Select */}
             <div>
               <select
@@ -142,6 +166,8 @@ const Orders = ({ token, setToken }) => {
       <div></div>
     </div>
   );
-};
+  };
+}
+
 
 export default Orders;

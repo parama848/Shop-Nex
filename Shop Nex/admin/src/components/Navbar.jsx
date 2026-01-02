@@ -14,7 +14,7 @@ const Navbar = ({ setToken }) => {
             NEX
           </span>
         </Link>
-        <span className='hidden sm:block text-xs text-gray-500 border border-gray-300 rounded-full px-2 py-0.5'>Admin Panel</span>
+        <span className='sm:block text-xs text-gray-500 border border-gray-300 rounded-full px-2 py-0.5'>Admin Panel</span>
       </div>
       <button
         onClick={() => setToken('')}

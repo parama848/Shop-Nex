@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import axios from "axios";
 
+
 const Orders = () => {
   const { backendUrl, token, currency, products } = useContext(ShopContext);
   const [orderData, setOrderData] = useState([]);
@@ -18,14 +19,11 @@ const Orders = () => {
         return;
       }
 
-      const response = await axios.get(
-        `${backendUrl}/api/order/userorders`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${backendUrl}/api/order/userorders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.success) {
         const allOrdersItem = [];
@@ -55,13 +53,17 @@ const Orders = () => {
     loadOrderData();
   }, [token]);
 
+
   /* ================================
      UI
   ================================= */
   if (loading) {
     return (
-      <div className="border-t pt-16 text-center text-gray-500">
-        Loading orders...
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+          <p className="text-sm text-gray-600">Loading, please wait...</p>
+        </div>
       </div>
     );
   }
@@ -83,8 +85,9 @@ const Orders = () => {
       <div>
         {orderData.map((item, index) => {
           // FIND IMAGE FALLBACK FOR OLD ORDERS
-          const productData = products.find(p => p._id === item.productId);
-          const imageSrc = item.image?.[0] || productData?.image?.[0] || "/placeholder.png";
+          const productData = products.find((p) => p._id === item.productId);
+          const imageSrc =
+            item.image?.[0] || productData?.image?.[0] || "/placeholder.png";
 
           return (
             <div
@@ -119,9 +122,7 @@ const Orders = () => {
 
                   <p className="mt-1 text-sm">
                     Payment:{" "}
-                    <span className="text-gray-400">
-                      {item.paymentMethod}
-                    </span>
+                    <span className="text-gray-400">{item.paymentMethod}</span>
                   </p>
                 </div>
               </div>
@@ -130,12 +131,13 @@ const Orders = () => {
               <div className="md:w-1/2 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`w-2 h-2 rounded-full ${item.status === "Delivered"
-                      ? "bg-green-500"
-                      : item.status === "Cancelled"
+                    className={`w-2 h-2 rounded-full ${
+                      item.status === "Delivered"
+                        ? "bg-green-500"
+                        : item.status === "Cancelled"
                         ? "bg-red-500"
                         : "bg-yellow-500"
-                      }`}
+                    }`}
                   ></span>
                   <p className="text-sm md:text-base">{item.status}</p>
                 </div>
@@ -148,7 +150,7 @@ const Orders = () => {
                 </button>
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </div>

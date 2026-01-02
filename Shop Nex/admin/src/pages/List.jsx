@@ -12,6 +12,8 @@ const List = ({ token, setToken }) => {
     category: "",
   });
 
+  const [loading, setLoading] = useState(true);
+
   const fetchList = async () => {
     try {
       const response = await axios.get(backendUrl + "/api/product/list");
@@ -84,112 +86,137 @@ const List = ({ token, setToken }) => {
   };
 
   useEffect(() => {
-    fetchList();
-  }, []);
+  const loadData = async () => {
+    setLoading(true);
+    await fetchList();
+    setLoading(false);
+  };
 
+  loadData();
+}, []);
+
+
+  if(loading) {
+    if (loading) {
   return (
-    <>
-      <div className="flex flex-col gap-2">
-        {/* Table Header */}
-        <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] item-center py-2 px-2 border bg-gray-100 text-sm font-medium">
-          <b>Image</b>
-          <b>Name</b>
-          <b>Category</b>
-          <b>Price</b>
-          <b className="text-center">Action</b>
-        </div>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+        <p className="text-sm text-gray-600">Loading, please wait...</p>
+      </div>
+    </div>
+  );
+}
 
-        {/* Product List */}
-        {list.map((item) => (
-          <div
-            key={item._id}
-            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-2 px-2 border text-sm"
-          >
-            <img
-              className="w-12 h-12 object-cover rounded-md"
-              src={item.image[0]}
-              alt="Product"
-            />
+  } else {
 
-            {/* If editing, show form */}
-            {editingProduct === item._id ? (
-              <>
-                <input
-                  className="border px-2 py-1 rounded w-full"
-                  value={editForm.name}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                />
-                <input
-                  className="hidden md:block border px-2 py-1 rounded w-full"
-                  value={editForm.category}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      category: e.target.value,
-                    }))
-                  }
-                />
-                <input
-                  className="hidden md:block border px-2 py-1 rounded w-full"
-                  type="number"
-                  value={editForm.price}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({ ...prev, price: e.target.value }))
-                  }
-                />
-              </>
-            ) : (
-              <>
-                <p className="truncate">{item.name}</p>
-                <p className="hidden md:block">{item.category}</p>
-                <p className="hidden md:block">
-                  {currency}
-                  {item.price}
-                </p>
-              </>
-            )}
-
-            {/* Action buttons */}
-            <div className="flex justify-end md:justify-center gap-2">
+    return (
+      <>
+        <div className="flex flex-col gap-2">
+          {/* Table Header */}
+          <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] item-center py-2 px-2 border bg-gray-100 text-sm font-medium">
+            <b>Image</b>
+            <b>Name</b>
+            <b>Category</b>
+            <b>Price</b>
+            <b className="text-center">Action</b>
+          </div>
+  
+          {/* Product List */}
+          {list.map((item) => (
+            <div
+              key={item._id}
+              className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-2 px-2 border text-sm"
+            >
+              <img
+                className="w-12 h-12 object-cover rounded-md"
+                src={item.image[0]}
+                alt="Product"
+              />
+  
+              {/* If editing, show form */}
               {editingProduct === item._id ? (
                 <>
-                  <button
-                    className="text-green-600 font-medium hover:text-green-800"
-                    onClick={updateProduct}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="text-gray-500 font-medium hover:text-gray-700"
-                    onClick={cancelEditing}
-                  >
-                    Cancel
-                  </button>
+                  <input
+                    className="border px-2 py-1 rounded w-full"
+                    value={editForm.name}
+                    onChange={(e) =>
+                      setEditForm((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                  />
+                  <input
+                    className="hidden md:block border px-2 py-1 rounded w-full"
+                    value={editForm.category}
+                    onChange={(e) =>
+                      setEditForm((prev) => ({
+                        ...prev,
+                        category: e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    className="hidden md:block border px-2 py-1 rounded w-full"
+                    type="number"
+                    value={editForm.price}
+                    onChange={(e) =>
+                      setEditForm((prev) => ({ ...prev, price: e.target.value }))
+                    }
+                  />
                 </>
               ) : (
                 <>
-                  <button
-                    className="text-blue-600 font-medium hover:text-blue-800 mr-2"
-                    onClick={() => startEditing(item)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="text-red-600 font-medium hover:text-red-800"
-                    onClick={() => removeProduct(item._id)}
-                  >
-                    X
-                  </button>
+                  <p className="truncate">{item.name}</p>
+                  <p className="hidden md:block">{item.category}</p>
+                  <p className="hidden md:block">
+                    {currency}
+                    {item.price}
+                  </p>
                 </>
               )}
+  
+              {/* Action buttons */}
+              <div className="flex justify-end md:justify-center gap-2">
+                {editingProduct === item._id ? (
+                  <>
+                    <button
+                      className="text-green-600 font-medium hover:text-green-800"
+                      onClick={updateProduct}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="text-gray-500 font-medium hover:text-gray-700"
+                      onClick={cancelEditing}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="text-blue-600 font-medium hover:text-blue-800 mr-2"
+                      onClick={() => startEditing(item)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="text-red-600 font-medium hover:text-red-800"
+                      onClick={() => removeProduct(item._id)}
+                    >
+                      X
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-};
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  }  
+
+
 
 export default List;

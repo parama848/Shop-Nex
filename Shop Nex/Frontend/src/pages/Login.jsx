@@ -56,7 +56,7 @@ const Login = () => {
       if (token) {
          navigate('/');
       } 
-    },[token])
+    },[token]);
 
   return (
     <form
@@ -101,7 +101,7 @@ const Login = () => {
           {currentState === "Login" ? (
             <p
               onClick={() => setCurrentState("Sign Up")}
-              className="cursor-pointer text-red-300"
+              className="cursor-pointer text-blue-300"
             >
               Create account
             </p>

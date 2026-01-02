@@ -76,7 +76,7 @@ const Add = ({ token, setToken }) => {
 
         <div>
           <div className='text-center ml-80'>
-            <h1 className='text-xl font-medium mb-5'>Admin <span className='text-red-400'>Pannel</span> </h1>
+  
           </div>
           <p>Upload Image</p>
 

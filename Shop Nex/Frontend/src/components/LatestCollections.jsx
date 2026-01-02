@@ -2,15 +2,33 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import ShopLoader from "../context/ShopLoader";
 
 const LatestCollections = () => {
   const { products } = useContext(ShopContext);
 
   const [latestProducts, setLatestProducts] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
+
+  // useEffect(() => {
+  //   setLatestProducts(products.slice(0, 10));
+  // }, [products]);
   useEffect(() => {
+  setLoading(true);
+
+  setTimeout(() => {
     setLatestProducts(products.slice(0, 10));
-  }, [products]);
+    setLoading(false);
+  }, 800); // smooth professional delay
+}, [products]);
+
+
+if(loading){
+  return <ShopLoader />;
+}
+else {
 
   return (
     <div className="my-10  "> 
@@ -38,6 +56,8 @@ const LatestCollections = () => {
       </div>
     </div>
   );
+  }
 };
+
 
 export default LatestCollections;

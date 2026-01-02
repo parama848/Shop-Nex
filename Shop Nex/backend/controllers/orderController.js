@@ -20,7 +20,7 @@ const razorpayInstance = new Razorpay({
 });
 
 /* ================================
-   CASH ON DELIVERY
+   CASH ON DELIVERYs
 ================================ */
 const placeOrder = async (req, res) => {
   try {

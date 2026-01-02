@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+
 /* ================================
    INITIAL FORM STATE
 ================================ */
@@ -85,13 +86,13 @@ const PlaceOrder = () => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const validateForm = () => {
-    if (!form.firstName.trim()) return toast.error("First name required"), false;
+    if (!form.firstName.trim())
+      return toast.error("First name required"), false;
     if (!form.email.trim()) return toast.error("Email required"), false;
     if (!form.street.trim()) return toast.error("Street required"), false;
     if (!form.city.trim()) return toast.error("City required"), false;
     if (!form.phone.trim()) return toast.error("Phone required"), false;
-    if (itemsArray.length === 0)
-      return toast.error("Cart is empty"), false;
+    if (itemsArray.length === 0) return toast.error("Cart is empty"), false;
     return true;
   };
 
@@ -133,11 +134,9 @@ const PlaceOrder = () => {
     try {
       /* -------- CASH ON DELIVERY -------- */
       if (paymentMethod === "cod") {
-        const res = await axios.post(
-          `${backendUrl}/api/order/place`,
-          payload,
-          { headers }
-        );
+        const res = await axios.post(`${backendUrl}/api/order/place`, payload, {
+          headers,
+        });
 
         if (res.data.success) {
           toast.success("Order placed successfully");
@@ -177,7 +176,9 @@ const PlaceOrder = () => {
         }
 
         if (!window.Razorpay) {
-          toast.error("Razorpay SDK failed to load. Check your internet connection.");
+          toast.error(
+            "Razorpay SDK failed to load. Check your internet connection."
+          );
           return;
         }
 
@@ -232,13 +233,15 @@ const PlaceOrder = () => {
     } catch (err) {
       console.error("placeOrder error:", err?.response || err);
       toast.error(
-        err?.response?.data?.message ||
-        "Request failed. Please login again."
+        err?.response?.data?.message || "Request failed. Please login again."
       );
     } finally {
       setLoading(false);
     }
   };
+
+
+ 
 
   /* ================================
      UI
@@ -251,29 +254,101 @@ const PlaceOrder = () => {
       >
         {/* DELIVERY */}
         <div className="bg-white p-8 rounded-lg shadow-sm">
-          <h2 className="text-2xl font-semibold mb-6">
+          <h2 className="text-2xl font-semibold mb-8">
             Delivery <span className="text-blue-500">Information</span>
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
-            <input className="input" name="firstName" value={form.firstName} placeholder="First Name" onChange={handleChange} required />
-            <input className="input" name="lastName" value={form.lastName} placeholder="Last Name" onChange={handleChange} required />
+          {/* First + Last Name */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <input
+              className="input"
+              name="firstName"
+              value={form.firstName}
+              placeholder="First Name"
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="input"
+              name="lastName"
+              value={form.lastName}
+              placeholder="Last Name"
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <input className="input mt-4" name="email" value={form.email} placeholder="Email" onChange={handleChange} required />
-          <input className="input mt-4" name="street" value={form.street} placeholder="Street" onChange={handleChange} required />
-
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <input className="input" name="city" value={form.city} placeholder="City" onChange={handleChange} required />
-            <input className="input" name="state" value={form.state} placeholder="State" onChange={handleChange} required />
+          {/* Email + Street */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+            <input
+              className="input"
+              name="email"
+              value={form.email}
+              placeholder="Email Address"
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="input"
+              name="street"
+              value={form.street}
+              placeholder="Street Address"
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <input className="input" name="zipcode" value={form.zipcode} placeholder="Zipcode" onChange={handleChange} required />
-            <input className="input" name="country" value={form.country} placeholder="Country" onChange={handleChange} required />
+          {/* City + State */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+            <input
+              className="input"
+              name="city"
+              value={form.city}
+              placeholder="City"
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="input"
+              name="state"
+              value={form.state}
+              placeholder="State"
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <input className="input mt-4" name="phone" value={form.phone} placeholder="Phone" onChange={handleChange} required />
+          {/* Zip + Country */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+            <input
+              className="input"
+              name="zipcode"
+              value={form.zipcode}
+              placeholder="Zip Code"
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="input"
+              name="country"
+              value={form.country}
+              placeholder="Country"
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Phone */}
+          <div className="mt-6">
+            <input
+              className="input"
+              name="phone"
+              value={form.phone}
+              placeholder="Phone Number"
+              onChange={handleChange}
+              required
+            />
+          </div>
         </div>
 
         {/* SUMMARY */}
@@ -298,15 +373,16 @@ const PlaceOrder = () => {
           </h3>
 
           <div className="grid grid-cols-3 gap-4">
-            {["stripe", "razorpay", "cod"].map((method) => (
+            {["stripe", "cod"].map((method) => (
               <button
                 key={method}
                 type="button"
                 onClick={() => setPaymentMethod(method)}
-                className={`border rounded-lg py-3 text-sm font-medium transition ${paymentMethod === method
-                  ? "border-black ring-2 ring-black"
-                  : "hover:border-gray-400"
-                  }`}
+                className={`border rounded-lg py-3 text-sm font-medium transition ${
+                  paymentMethod === method
+                    ? "border-black ring-2 ring-black"
+                    : "hover:border-gray-400"
+                }`}
               >
                 {method.toUpperCase()}
               </button>

@@ -1,44 +1,61 @@
-import React from 'react'
-import { assets } from '../assets/assets'
+import React from "react";
 
 const Footer = () => {
   return (
-    <div className='bg-gray-600 px-7'>
-      <div className='flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-40 text-sm px-5 py-2'>
+    <footer className="bg-gray-900 text-gray-300 px-6 sm:px-12">
+      
+      {/* Top Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-[3fr_1fr_1fr] gap-14 py-14 border-b border-gray-700">
+        
+        {/* Brand */}
         <div>
-              
-            <img src={assets.logo} className=' w-40 ' />
-          
-            <p className='w-full md:w-2/3 text-gray-200'>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore officia architecto debitis ipsam, hic dolore voluptatem unde distinctio, facilis laudantium, impedit modi sit odit. Magni, laboriosam. Earum laboriosam animi maxime!
-            </p>
+          <div className="flex items-center gap-2 mb-4">
+            <h1 className="text-2xl font-bold tracking-wide text-white">
+              SHOP<span className="text-blue-500">NEX</span>
+            </h1>
+            <span className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300">
+              Admin Panel
+            </span>
+          </div>
+
+          <p className="text-sm leading-relaxed text-gray-400 md:w-2/3">
+            Shop Nex Admin Panel is designed to manage products, orders,
+            customers, and analytics efficiently with a secure and scalable
+            architecture.
+          </p>
         </div>
 
-        <div className='mt-12'>
-            <p className='text-xl font-medium mb-5'>COMPANY</p>
-            <ul className='flex flex-col gap-1 text-gray-200'>
-                 <li>Home</li>
-                 <li>About Us</li>
-                 <li>Delivery</li>
-                 <li>Privacy Policy</li>
-            </ul>
+        {/* Company */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4 text-white">Company</h3>
+          <ul className="flex flex-col gap-2 text-sm">
+            <li className="hover:text-white cursor-pointer">Dashboard</li>
+            <li className="hover:text-white cursor-pointer">Products</li>
+            <li className="hover:text-white cursor-pointer">Orders</li>
+            <li className="hover:text-white cursor-pointer">Settings</li>
+          </ul>
         </div>
 
-        <div className='mt-12'>
-            <p className='text-xl font-medium mb-5'>GET IN TOUCH</p>
-            <ul className='flex flex-col gap-1 text-gray-200'>
-                <li>+1-212-546-7890</li>
-                <li>contact@foreveryou.com</li>
-            </ul>
+        {/* Contact */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4 text-white">
+            Get in Touch
+          </h3>
+          <ul className="flex flex-col gap-2 text-sm text-gray-400">
+            <li>📞 +1 212 546 7890</li>
+            <li>✉️ admin@shopnex.com</li>
+          </ul>
         </div>
       </div>
 
-      <div>
-        <hr />
-        <p className='py-5 ttext-sm text-center'>Copyright 2025@ forever.com - All Rights Reserved</p>
+      {/* Bottom */}
+      <div className="py-5 text-center text-sm text-gray-500">
+        © 2025 <span className="text-white font-medium">SHOP NEX</span> Admin
+        Panel. All Rights Reserved.
       </div>
-    </div>
-  )
-}
 
-export default Footer
+    </footer>
+  );
+};
+
+export default Footer;

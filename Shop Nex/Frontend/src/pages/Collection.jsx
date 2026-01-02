@@ -14,6 +14,7 @@ const Collection = () => {
   const [subCategory, setSubCategory] = useState([]); // Selected types (e.g., Topwear)
   const [sortType, setSortType ] = useState('relavent');
 
+  const [loading, setLoading] = useState(true);
   
   
 
@@ -81,16 +82,28 @@ const sortProduct = () => {
   }
 };
 
-
  useEffect(()=>{
+  setLoading(true);
   applyFilter();
+  setLoading(false);
  },[category,subCategory,search,showSearch,products])
 
  useEffect(()=>{
   sortProduct();
  },[sortType,products])
- 
 
+ 
+ 
+ if(loading){
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+        <p className="text-sm text-gray-600">Loading, please wait...</p>
+      </div>
+    </div>
+  );
+ } else {
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t '>
 
@@ -172,5 +185,6 @@ const sortProduct = () => {
     </div>
   );
 };
+}
 
 export default Collection;
